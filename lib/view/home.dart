@@ -60,7 +60,6 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         Flexible(
-                          fit: FlexFit.loose,
                           child: FutureBuilder<WeatherOneCallData>(
                             future: futureWeatherOneCallData,
                             builder: (context, snapshot) {
@@ -112,7 +111,9 @@ class _HeaderState extends State<Header> {
             SizedBox(
               height: 12,
             ),
-            H1Text(innerText: widget.cityName),
+            Flexible(
+              child: H1Text(innerText: widget.cityName),
+            ),
             SizedBox(
               height: 15,
             ),
@@ -242,54 +243,44 @@ class _WeatherDetailsWrapperState extends State<WeatherDetailsWrapper> {
   Widget build(BuildContext context) {
     Widget _weatherWidget;
     WeatherOneCallData weatherOneCallData = widget.weatherOneCallData;
-    return Container(
-        child: Flex(
-      direction: Axis.vertical,
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Expanded(
-          child: Flex(
-            direction: Axis.vertical,
-            children: [
-              Container(
-                padding: EdgeInsets.only(left: 15),
-                child: Align(
-                  child: H2Text(innerText: "Today"),
-                  alignment: Alignment.centerLeft,
-                ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: itemCount(weatherOneCallData.hourly),
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (BuildContext context, int index) {
-                    String hour =
-                        timeStampToHour(weatherOneCallData.hourly[index].dt);
-                    String temp = weatherOneCallData.hourly[index].temp
-                        .round()
-                        .toString();
-                    _weatherWidget = WeatherDetailsCard(
-                      hour: hour,
-                      temp: temp,
-                    );
-                    print(_currentWeather(weatherOneCallData.hourly[index].dt));
-
-                    if (_currentWeather(weatherOneCallData.hourly[index].dt) ==
-                        true) {
-                      _weatherWidget = WeatherDetailsCard(
-                          hour: hour,
-                          temp: temp,
-                          backgroundColor: secondaryColor);
-                    }
-                    return _weatherWidget;
-                  },
-                ),
-              ),
-            ],
+        Container(
+          color: Colors.green,
+          padding: EdgeInsets.only(left: 15),
+          child: Align(
+            child: H2Text(innerText: "Today"),
+            alignment: Alignment.centerLeft,
           ),
         ),
+        Expanded(
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: itemCount(weatherOneCallData.hourly),
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (BuildContext context, int index) {
+              String hour =
+                  timeStampToHour(weatherOneCallData.hourly[index].dt);
+              String temp =
+                  weatherOneCallData.hourly[index].temp.round().toString();
+              _weatherWidget = WeatherDetailsCard(
+                hour: hour,
+                temp: temp,
+              );
+              print(_currentWeather(weatherOneCallData.hourly[index].dt));
+
+              if (_currentWeather(weatherOneCallData.hourly[index].dt) ==
+                  true) {
+                _weatherWidget = WeatherDetailsCard(
+                    hour: hour, temp: temp, backgroundColor: secondaryColor);
+              }
+              return _weatherWidget;
+            },
+          ),
+        )
       ],
-    ));
+    );
   }
 }
 
