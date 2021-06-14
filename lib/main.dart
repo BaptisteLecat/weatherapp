@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'view/home.dart';
-import 'view/menu.dart';
-import 'view/search.dart';
-import 'config/color.dart';
 import 'routerGenerator.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(MyApp());
