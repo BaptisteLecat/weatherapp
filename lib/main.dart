@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
       onGenerateRoute: RouterGenerator.generateRoute,
       initialRoute: "/",
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'WeatherApp',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

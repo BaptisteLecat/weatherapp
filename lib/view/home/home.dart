@@ -6,8 +6,7 @@ import '../../api/WeatherOneCallFetcher.dart';
 import '../../Model/WeatherData.dart';
 import '../../Model/WeatherOneCallData.dart';
 import '../Widget/TextWidget.dart';
-import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart';
+import '../../responsive.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -19,11 +18,22 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late Future<WeatherData> futureWeatherData;
   var weatherFetcher = WeatherFetcher(city: "Saint-Étienne-de-Montluc");
+  late Future<WeatherOneCallData> futureWeatherOneCallData;
+  var weatherOneCallFetcher = WeatherOneCallFetcher(
+      latitude: "47.27", longitude: "-1.79", time: "hourly");
 
   @override
   void initState() {
     super.initState();
     futureWeatherData = weatherFetcher.fetchData();
+    futureWeatherOneCallData = weatherOneCallFetcher.fetchData();
+  }
+
+  void loadWeatherData() {
+    setState(() {
+      futureWeatherData = weatherFetcher.fetchData();
+      futureWeatherOneCallData = weatherOneCallFetcher.fetchData();
+    });
   }
 
   @override
@@ -31,7 +41,28 @@ class _HomePageState extends State<HomePage> {
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
-              title: Text("Home"),
+              title: H4Text(
+                innerText: "Home",
+                context: context,
+              ),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.refresh_outlined),
+                  tooltip: 'Refresh',
+                  onPressed: () {
+                    loadWeatherData();
+                    var test = context;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Weather data have been refreshed.",
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 18)),
+                        backgroundColor: secondaryColor,
+                      ),
+                    );
+                  },
+                )
+              ],
             ),
             backgroundColor: backgroundColor,
             body: Container(
@@ -46,7 +77,9 @@ class _HomePageState extends State<HomePage> {
                       if (orientation == Orientation.portrait) {
                         return PortraitDisplay(snapshot: snapshot);
                       } else {
-                        return LandscapeDisplay(snapshot: snapshot);
+                        return LandscapeDisplay(
+                            snapshot: snapshot,
+                            futureWeatherOneCallData: futureWeatherOneCallData);
                       }
                     });
                   } else if (snapshot.hasError) {
@@ -66,22 +99,18 @@ class _HomePageState extends State<HomePage> {
 
 class LandscapeDisplay extends StatefulWidget {
   AsyncSnapshot<WeatherData> snapshot;
-  LandscapeDisplay({Key? key, required this.snapshot}) : super(key: key);
+  late Future<WeatherOneCallData> futureWeatherOneCallData;
+  LandscapeDisplay(
+      {Key? key,
+      required this.snapshot,
+      required this.futureWeatherOneCallData})
+      : super(key: key);
 
   @override
   _LandscapeDisplayState createState() => _LandscapeDisplayState();
 }
 
 class _LandscapeDisplayState extends State<LandscapeDisplay> {
-  late Future<WeatherOneCallData> futureWeatherOneCallData;
-  var weatherOneCallFetcher = WeatherOneCallFetcher(
-      latitude: "47.27", longitude: "-1.79", time: "hourly");
-
-  @override
-  void initState() {
-    futureWeatherOneCallData = weatherOneCallFetcher.fetchData();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -109,7 +138,7 @@ class _LandscapeDisplayState extends State<LandscapeDisplay> {
           flex: 2,
           child: Container(
             child: FutureBuilder<WeatherOneCallData>(
-              future: futureWeatherOneCallData,
+              future: widget.futureWeatherOneCallData,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return WeatherDetailsWrapper(
@@ -219,7 +248,7 @@ class _HeaderState extends State<Header> {
       "November",
       "December"
     ];
-    return "${weekDays[widget.date.weekday]} ${widget.date.day} ${months[widget.date.month]} ${widget.date.year}";
+    return "${weekDays[widget.date.weekday]} ${widget.date.day} ${months[widget.date.month]} ${widget.date.year} ${widget.date.minute}";
   }
 
   @override
