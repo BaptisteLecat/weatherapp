@@ -248,7 +248,7 @@ class _HeaderState extends State<Header> {
       "November",
       "December"
     ];
-    return "${weekDays[widget.date.weekday]} ${widget.date.day} ${months[widget.date.month]} ${widget.date.year} ${widget.date.minute}";
+    return "${weekDays[widget.date.weekday]} ${widget.date.day} ${months[widget.date.month]} ${widget.date.year}";
   }
 
   @override
