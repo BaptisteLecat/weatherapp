@@ -34,7 +34,7 @@ class Drizzle {
 }
 
 class Rain {
-  static const int id = 4;
+  static const int id = 5;
   static String defaultIcon = "7";
   static var icons = {
     500: "8",

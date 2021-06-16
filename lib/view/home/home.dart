@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:weatherapp/Model/WeatherIcon/WeatherIcon.dart';
 import '../../config/color.dart';
 import '../menu.dart';
 import '../../api/WeatherFetcher.dart';
@@ -293,6 +294,8 @@ class _WeatherContentState extends State<WeatherContent> {
     String temp = "${weatherData.main.temp.round().toString()}°";
     String wind = "${windSpeedKMH().toString()}km/h";
     String humidity = "${weatherData.main.humidity}%";
+    int idWeather = weatherData.weather[0].id;
+    WeatherIcon weatherIcon = WeatherIcon(id: idWeather);
     return Container(
       width: MediaQuery.of(context).size.width,
       child: Flex(
@@ -302,7 +305,7 @@ class _WeatherContentState extends State<WeatherContent> {
           Flexible(
             flex: 2,
             child: Image(
-              image: AssetImage('assets/weatherIcon/cloud/12.png'),
+              image: AssetImage(weatherIcon.getWeatherIcon()),
             ),
           ),
           Flexible(
@@ -364,15 +367,17 @@ class _WeatherDetailsWrapperState extends State<WeatherDetailsWrapper> {
       String hour = timeStampToHour(widget.weatherOneCallData.hourly[index].dt);
       String temp =
           widget.weatherOneCallData.hourly[index].temp.round().toString();
+      int idWeather = widget.weatherOneCallData.hourly[index].weather[0].id;
 
       if (_currentWeather(widget.weatherOneCallData.hourly[index].dt) == true) {
         listCard.add(WeatherDetailsCard(
-            hour: hour, temp: temp, backgroundColor: secondaryColor));
+            hour: hour,
+            temp: temp,
+            idWeather: idWeather,
+            backgroundColor: secondaryColor));
       } else {
-        listCard.add(WeatherDetailsCard(
-          hour: hour,
-          temp: temp,
-        ));
+        listCard.add(
+            WeatherDetailsCard(hour: hour, temp: temp, idWeather: idWeather));
       }
     }
     return listCard;
@@ -444,11 +449,13 @@ class _WeatherDetailsWrapperState extends State<WeatherDetailsWrapper> {
 class WeatherDetailsCard extends StatefulWidget {
   String temp;
   String hour;
+  int idWeather;
   Color backgroundColor;
   WeatherDetailsCard(
       {Key? key,
       required this.hour,
       required this.temp,
+      required this.idWeather,
       this.backgroundColor = thirdColor})
       : super(key: key);
 
@@ -461,6 +468,7 @@ class _WeatherDetailsCardState extends State<WeatherDetailsCard> {
   Widget build(BuildContext context) {
     String temp = "${widget.temp}°";
     String hour = "${widget.hour}h";
+    WeatherIcon weatherIcon = WeatherIcon(id: widget.idWeather);
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         return Container(
@@ -481,7 +489,7 @@ class _WeatherDetailsCardState extends State<WeatherDetailsCard> {
                     return Container(
                       child: Image(
                         height: constraints.maxHeight / 1.5,
-                        image: AssetImage('assets/weatherIcon/cloud/12.png'),
+                        image: AssetImage(weatherIcon.getWeatherIcon()),
                       ),
                     );
                   },

@@ -3,23 +3,37 @@ import 'package:weatherapp/Model/WeatherIcon/WeatherIconClasses.dart';
 
 class WeatherIcon {
   int id;
+  final iconPath = "assets/weatherIcon/day/";
+  final fileExtension = ".png";
 
   WeatherIcon({required this.id});
 
   String getWeatherIcon() {
     switch (this.id ~/ 100) {
       case ThunderStorm.id:
-        return _getIcon(ThunderStorm.defaultIcon, ThunderStorm.icons);
+        return this.iconPath +
+            _getIcon(ThunderStorm.defaultIcon, ThunderStorm.icons) +
+            this.fileExtension;
       case Drizzle.id:
-        return _getIcon(Drizzle.defaultIcon, Drizzle.icons);
+        return this.iconPath +
+            _getIcon(Drizzle.defaultIcon, Drizzle.icons) +
+            this.fileExtension;
       case Rain.id:
-        return _getIcon(Rain.defaultIcon, Rain.icons);
+        return this.iconPath +
+            _getIcon(Rain.defaultIcon, Rain.icons) +
+            this.fileExtension;
       case Snow.id:
-        return _getIcon(Snow.defaultIcon, Snow.icons);
+        return this.iconPath +
+            _getIcon(Snow.defaultIcon, Snow.icons) +
+            this.fileExtension;
       case Atmosphere.id:
-        return _getIcon(Atmosphere.defaultIcon, Atmosphere.icons);
+        return this.iconPath +
+            _getIcon(Atmosphere.defaultIcon, Atmosphere.icons) +
+            this.fileExtension;
       case CloudClear.id:
-        return _getIcon(CloudClear.defaultIcon, CloudClear.icons);
+        return this.iconPath +
+            _getIcon(CloudClear.defaultIcon, CloudClear.icons) +
+            this.fileExtension;
       default:
         return "default";
     }
