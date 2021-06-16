@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../config/color.dart';
+import '../../responsive.dart';
 
 class Menu extends StatefulWidget {
   final int selectedIndex;
@@ -43,6 +44,9 @@ class _MenuState extends State<Menu> {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
+      iconSize: isMobile(context) ? 20 : 50,
+      selectedFontSize: isMobile(context) ? 14 : 36,
+      unselectedFontSize: isMobile(context) ? 12 : 30,
       type: BottomNavigationBarType.fixed,
       fixedColor: selectedIconColor,
       unselectedItemColor: unselectedIconColor,

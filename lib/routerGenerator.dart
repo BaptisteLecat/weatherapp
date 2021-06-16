@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'view/home.dart';
+import 'view/home/home.dart';
 import 'view/forecast.dart';
 import 'view/search.dart';
 
