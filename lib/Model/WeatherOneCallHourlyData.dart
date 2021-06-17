@@ -1,18 +1,18 @@
 // To parse this JSON data, do
 //
-//     final weatherOneCallData = weatherOneCallDataFromJson(jsonString);
+//     final WeatherOneCallHourlyData = WeatherOneCallHourlyDataFromJson(jsonString);
 
 import 'package:meta/meta.dart';
 import 'dart:convert';
 
-WeatherOneCallData weatherOneCallDataFromJson(String str) =>
-    WeatherOneCallData.fromJson(json.decode(str));
+WeatherOneCallHourlyData WeatherOneCallHourlyDataFromJson(String str) =>
+    WeatherOneCallHourlyData.fromJson(json.decode(str));
 
-String weatherOneCallDataToJson(WeatherOneCallData data) =>
+String WeatherOneCallHourlyDataToJson(WeatherOneCallHourlyData data) =>
     json.encode(data.toJson());
 
-class WeatherOneCallData {
-  WeatherOneCallData({
+class WeatherOneCallHourlyData {
+  WeatherOneCallHourlyData({
     required this.lat,
     required this.lon,
     required this.timezone,
@@ -26,8 +26,8 @@ class WeatherOneCallData {
   int timezoneOffset;
   List<Hourly> hourly;
 
-  factory WeatherOneCallData.fromJson(Map<String, dynamic> json) =>
-      WeatherOneCallData(
+  factory WeatherOneCallHourlyData.fromJson(Map<String, dynamic> json) =>
+      WeatherOneCallHourlyData(
         lat: json["lat"].toDouble(),
         lon: json["lon"].toDouble(),
         timezone: json["timezone"],

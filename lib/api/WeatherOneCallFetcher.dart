@@ -1,7 +1,8 @@
 import 'package:http/http.dart' as http;
 import 'package:weatherapp/api/MainFetcher.dart';
 import 'dart:convert';
-import '../Model/WeatherOneCallData.dart';
+import '../Model/WeatherOneCallHourlyData.dart';
+import '../Model/WeatherOneCallDailyData.dart';
 
 class WeatherOneCallFetcher extends MainFetcher {
   String excludeArgs = "hourly,current,minutely,alerts"; //Default is Daily
@@ -26,18 +27,33 @@ class WeatherOneCallFetcher extends MainFetcher {
     return url;
   }
 
-  Future<WeatherOneCallData> fetchData() async {
+  Future<WeatherOneCallHourlyData> fetchHourlyData() async {
     final response = await http.get(Uri.parse(urlBuilder()));
 
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
       // then parse the JSON.
-      print(jsonDecode(response.body));
-      return WeatherOneCallData.fromJson(jsonDecode(response.body));
+      //print(jsonDecode(response.body));
+      return WeatherOneCallHourlyData.fromJson(jsonDecode(response.body));
     } else {
       // If the server did not return a 200 OK response,
       // then throw an exception.
-      throw Exception('Failed to load weatherOneCallData');
+      throw Exception('Failed to load weatherOneCallHourlyData');
+    }
+  }
+
+  Future<WeatherOneCallDailyData> fetchDailyData() async {
+    final response = await http.get(Uri.parse(urlBuilder()));
+
+    if (response.statusCode == 200) {
+      // If the server did return a 200 OK response,
+      // then parse the JSON.
+      //print(jsonDecode(response.body));
+      return WeatherOneCallDailyData.fromJson(jsonDecode(response.body));
+    } else {
+      // If the server did not return a 200 OK response,
+      // then throw an exception.
+      throw Exception('Failed to load weatherOneCallDailyData');
     }
   }
 }

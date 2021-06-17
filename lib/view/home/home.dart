@@ -5,7 +5,7 @@ import '../menu.dart';
 import '../../api/WeatherFetcher.dart';
 import '../../api/WeatherOneCallFetcher.dart';
 import '../../Model/WeatherData.dart';
-import '../../Model/WeatherOneCallData.dart';
+import '../../Model/WeatherOneCallHourlyData.dart';
 import '../Widget/TextWidget.dart';
 import '../../responsive.dart';
 
@@ -19,7 +19,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late Future<WeatherData> futureWeatherData;
   var weatherFetcher = WeatherFetcher(city: "Saint-Étienne-de-Montluc");
-  late Future<WeatherOneCallData> futureWeatherOneCallData;
+  late Future<WeatherOneCallHourlyData> futureWeatherOneCallData;
   var weatherOneCallFetcher = WeatherOneCallFetcher(
       latitude: "47.27", longitude: "-1.79", time: "hourly");
 
@@ -27,13 +27,13 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     futureWeatherData = weatherFetcher.fetchData();
-    futureWeatherOneCallData = weatherOneCallFetcher.fetchData();
+    futureWeatherOneCallData = weatherOneCallFetcher.fetchHourlyData();
   }
 
   void loadWeatherData() {
     setState(() {
       futureWeatherData = weatherFetcher.fetchData();
-      futureWeatherOneCallData = weatherOneCallFetcher.fetchData();
+      futureWeatherOneCallData = weatherOneCallFetcher.fetchHourlyData();
     });
   }
 
@@ -76,7 +76,9 @@ class _HomePageState extends State<HomePage> {
                     return OrientationBuilder(builder:
                         (BuildContext context, Orientation orientation) {
                       if (orientation == Orientation.portrait) {
-                        return PortraitDisplay(snapshot: snapshot);
+                        return PortraitDisplay(
+                            snapshot: snapshot,
+                            futureWeatherOneCallData: futureWeatherOneCallData);
                       } else {
                         return LandscapeDisplay(
                             snapshot: snapshot,
@@ -100,7 +102,7 @@ class _HomePageState extends State<HomePage> {
 
 class LandscapeDisplay extends StatefulWidget {
   AsyncSnapshot<WeatherData> snapshot;
-  late Future<WeatherOneCallData> futureWeatherOneCallData;
+  late Future<WeatherOneCallHourlyData> futureWeatherOneCallData;
   LandscapeDisplay(
       {Key? key,
       required this.snapshot,
@@ -138,7 +140,7 @@ class _LandscapeDisplayState extends State<LandscapeDisplay> {
         Expanded(
           flex: 2,
           child: Container(
-            child: FutureBuilder<WeatherOneCallData>(
+            child: FutureBuilder<WeatherOneCallHourlyData>(
               future: widget.futureWeatherOneCallData,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
@@ -161,22 +163,18 @@ class _LandscapeDisplayState extends State<LandscapeDisplay> {
 
 class PortraitDisplay extends StatefulWidget {
   AsyncSnapshot<WeatherData> snapshot;
-  PortraitDisplay({Key? key, required this.snapshot}) : super(key: key);
+  late Future<WeatherOneCallHourlyData> futureWeatherOneCallData;
+  PortraitDisplay(
+      {Key? key,
+      required this.snapshot,
+      required this.futureWeatherOneCallData})
+      : super(key: key);
 
   @override
   _PortraitDisplayState createState() => _PortraitDisplayState();
 }
 
 class _PortraitDisplayState extends State<PortraitDisplay> {
-  late Future<WeatherOneCallData> futureWeatherOneCallData;
-  var weatherOneCallFetcher = WeatherOneCallFetcher(
-      latitude: "47.27", longitude: "-1.79", time: "hourly");
-
-  @override
-  void initState() {
-    futureWeatherOneCallData = weatherOneCallFetcher.fetchData();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -195,8 +193,8 @@ class _PortraitDisplayState extends State<PortraitDisplay> {
         ),
         Expanded(
           flex: 1,
-          child: FutureBuilder<WeatherOneCallData>(
-            future: futureWeatherOneCallData,
+          child: FutureBuilder<WeatherOneCallHourlyData>(
+            future: widget.futureWeatherOneCallData,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return WeatherDetailsWrapper(
@@ -352,7 +350,7 @@ class WeatherInfo extends StatelessWidget {
 }
 
 class WeatherDetailsWrapper extends StatefulWidget {
-  WeatherOneCallData weatherOneCallData;
+  WeatherOneCallHourlyData weatherOneCallData;
   WeatherDetailsWrapper({Key? key, required this.weatherOneCallData})
       : super(key: key);
 
@@ -417,7 +415,7 @@ class _WeatherDetailsWrapperState extends State<WeatherDetailsWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    WeatherOneCallData weatherOneCallData = widget.weatherOneCallData;
+    WeatherOneCallHourlyData weatherOneCallData = widget.weatherOneCallData;
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
       var orientation = MediaQuery.of(context).orientation;
