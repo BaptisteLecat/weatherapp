@@ -19,17 +19,17 @@ class ThunderStorm {
 
 class Drizzle {
   static const int id = 3;
-  static String defaultIcon = "23";
+  static String defaultIcon = "5";
   static var icons = {
-    300: "23",
-    301: "23",
-    302: "23",
-    310: "22",
-    311: "22",
-    312: "22",
-    313: "22",
-    314: "22",
-    321: "22",
+    300: "13",
+    301: "13",
+    302: "13",
+    310: "13",
+    311: "5",
+    312: "5",
+    313: "5",
+    314: "5",
+    321: "5",
   };
 }
 
