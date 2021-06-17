@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'view/home/home.dart';
-import 'view/forecast.dart';
+import 'view/forecast/forecast.dart';
 import 'view/search.dart';
 
 class RouterGenerator {
