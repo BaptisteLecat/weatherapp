@@ -50,7 +50,7 @@ class _MenuState extends State<Menu> {
       type: BottomNavigationBarType.fixed,
       fixedColor: selectedIconColor,
       unselectedItemColor: unselectedIconColor,
-      elevation: 0,
+      elevation: 8,
       items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
