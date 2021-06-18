@@ -163,7 +163,46 @@ class LandscapeDisplay extends StatefulWidget {
 class _LandscapeDisplayState extends State<LandscapeDisplay> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          flex: 2,
+          child: FutureBuilder<WeatherOneCallHourlyData>(
+            future: widget.futureWeatherTodayData,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 25, left: 10, right: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          H2Text(context: context, innerText: "Today"),
+                          H4Text(context: context, innerText: "28 May, 2021")
+                        ],
+                      ),
+                    ),
+                    WeatherDetailsWrapper(weatherTodayData: snapshot.data!)
+                  ],
+                );
+              } else if (snapshot.hasError) {
+                return Center(child: Text("${snapshot.error}"));
+              }
+
+              // By default, show a loading spinner.
+              return Center(child: CircularProgressIndicator());
+            },
+          ),
+        ),
+        Expanded(
+          flex: 3,
+          child: ForecastDisplay(
+              futureWeatherForecastData: widget.futureWeatherForecastData),
+        )
+      ],
+    );
   }
 }
 
@@ -262,14 +301,11 @@ class _WeatherDetailsWrapperState extends State<WeatherDetailsWrapper> {
           ),
         );
       } else {
-        return Padding(
-            padding:
-                EdgeInsets.symmetric(horizontal: constraints.maxWidth * 0.2),
-            child: SingleChildScrollView(
-              child: Column(
-                children: constructList(weatherOneCallData.hourly),
-              ),
-            ));
+        return SingleChildScrollView(
+          child: Column(
+            children: constructList(weatherOneCallData.hourly),
+          ),
+        );
       }
     });
   }
@@ -399,7 +435,6 @@ class _ForecastDisplayState extends State<ForecastDisplay> {
       "Sunday"
     ];
     DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
-    print(date.weekday);
     return "${weekDays[date.weekday - 1]}";
   }
 
