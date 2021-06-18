@@ -163,45 +163,78 @@ class LandscapeDisplay extends StatefulWidget {
 class _LandscapeDisplayState extends State<LandscapeDisplay> {
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Expanded(
-          flex: 2,
-          child: FutureBuilder<WeatherOneCallHourlyData>(
-            future: widget.futureWeatherTodayData,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 25, left: 10, right: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          H2Text(context: context, innerText: "Today"),
-                          H4Text(context: context, innerText: "28 May, 2021")
-                        ],
-                      ),
-                    ),
-                    WeatherDetailsWrapper(weatherTodayData: snapshot.data!)
-                  ],
-                );
-              } else if (snapshot.hasError) {
-                return Center(child: Text("${snapshot.error}"));
-              }
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            flex: 3,
+            child: FutureBuilder<WeatherOneCallHourlyData>(
+              future: widget.futureWeatherTodayData,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  if (MediaQuery.of(context).orientation ==
+                      Orientation.portrait) {
+                    return Column(
+                      children: [
+                        Padding(
+                          padding:
+                              EdgeInsets.only(bottom: 25, left: 10, right: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              H2Text(context: context, innerText: "Today"),
+                              H4Text(
+                                  context: context, innerText: "28 May, 2021")
+                            ],
+                          ),
+                        ),
+                        WeatherDetailsWrapper(weatherTodayData: snapshot.data!)
+                      ],
+                    );
+                  } else {
+                    return Column(
+                      children: [
+                        Padding(
+                          padding:
+                              EdgeInsets.only(bottom: 25, left: 10, right: 10),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              H2Text(context: context, innerText: "Today"),
+                              H4Text(
+                                  context: context, innerText: "28 May, 2021")
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: WeatherDetailsWrapper(
+                              weatherTodayData: snapshot.data!),
+                        )
+                      ],
+                    );
+                  }
+                } else if (snapshot.hasError) {
+                  return Center(child: Text("${snapshot.error}"));
+                }
 
-              // By default, show a loading spinner.
-              return Center(child: CircularProgressIndicator());
-            },
+                // By default, show a loading spinner.
+                return Center(child: CircularProgressIndicator());
+              },
+            ),
           ),
-        ),
-        Expanded(
-          flex: 3,
-          child: ForecastDisplay(
-              futureWeatherForecastData: widget.futureWeatherForecastData),
-        )
-      ],
+          Expanded(
+            flex: 2,
+            child: Container(),
+          ),
+          Expanded(
+            flex: 4,
+            child: ForecastDisplay(
+                futureWeatherForecastData: widget.futureWeatherForecastData),
+          )
+        ],
+      ),
     );
   }
 }
@@ -301,9 +334,12 @@ class _WeatherDetailsWrapperState extends State<WeatherDetailsWrapper> {
           ),
         );
       } else {
-        return SingleChildScrollView(
-          child: Column(
-            children: constructList(weatherOneCallData.hourly),
+        return Container(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Column(
+              children: constructList(weatherOneCallData.hourly),
+            ),
           ),
         );
       }
@@ -340,7 +376,7 @@ class _WeatherDetailsCardState extends State<WeatherDetailsCard> {
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               color: widget.backgroundColor),
-          height: 80,
+          height: (constraints.maxWidth > 200) ? 150 : 80,
           margin: (MediaQuery.of(context).orientation == Orientation.landscape)
               ? EdgeInsets.symmetric(vertical: 10)
               : EdgeInsets.symmetric(horizontal: 10),
@@ -522,7 +558,7 @@ class _ForecastDetailsCardState extends State<ForecastDetailsCard> {
     return Container(
       padding: EdgeInsets.all(10),
       margin: EdgeInsets.symmetric(vertical: 10),
-      height: 80,
+      height: (isMobile(context)) ? 80 : 130,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16), color: thirdColor),
       child: Row(
@@ -530,6 +566,7 @@ class _ForecastDetailsCardState extends State<ForecastDetailsCard> {
         children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               H3Text(context: context, innerText: widget.day),
               H4Text(context: context, innerText: widget.dateMonth)
