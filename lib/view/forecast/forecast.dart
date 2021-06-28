@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:weatherapp/Model/WeatherIcon/WeatherIcon.dart';
 import '../../config/color.dart';
@@ -9,6 +11,8 @@ import '../../Model/WeatherOneCallHourlyData.dart';
 import '../../Model/WeatherOneCallDailyData.dart';
 import '../Widget/TextWidget.dart';
 import '../../responsive.dart';
+import '../../geolocation/UserLocation.dart';
+import 'package:location/location.dart';
 
 class ForecastPage extends StatefulWidget {
   const ForecastPage({Key? key}) : super(key: key);
@@ -19,21 +23,42 @@ class ForecastPage extends StatefulWidget {
 
 class _ForecastPage extends State<ForecastPage> {
   late Future<WeatherOneCallHourlyData> futureWeatherTodayData;
-  var weatherTodayFetcher = WeatherOneCallFetcher(
-      latitude: "47.27", longitude: "-1.79", time: "hourly");
+
   late Future<WeatherOneCallDailyData> futureWeatherForecastData;
-  var weatherForecastFetcher =
-      WeatherOneCallFetcher(latitude: "47.27", longitude: "-1.79");
+
+  late Future<LocationData> futurePosition;
+  var position;
 
   @override
   void initState() {
     super.initState();
-    futureWeatherForecastData = weatherForecastFetcher.fetchDailyData();
-    futureWeatherTodayData = weatherTodayFetcher.fetchHourlyData();
+    initPosition();
   }
 
-  void loadWeatherData() {
+  void initPosition() {
+    var locationFetcher = UserLocation();
+    futurePosition = locationFetcher.determinePosition();
+    futurePosition
+        .then((positionData) => setState(() {
+              position = positionData;
+              loadWeatherData(
+                  latitude: positionData.latitude.toString(),
+                  longitude: positionData.longitude.toString());
+            }))
+        .catchError((error) => () {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text(error.message)));
+              loadWeatherData();
+            });
+  }
+
+  void loadWeatherData(
+      {String latitude = "47.27", String longitude = "-1.79"}) {
     setState(() {
+      var weatherForecastFetcher =
+          WeatherOneCallFetcher(latitude: latitude, longitude: longitude);
+      var weatherTodayFetcher = WeatherOneCallFetcher(
+          latitude: latitude, longitude: longitude, time: "hourly");
       futureWeatherForecastData = weatherForecastFetcher.fetchDailyData();
       futureWeatherTodayData = weatherTodayFetcher.fetchHourlyData();
     });
@@ -53,7 +78,7 @@ class _ForecastPage extends State<ForecastPage> {
                   icon: const Icon(Icons.refresh_outlined),
                   tooltip: 'Refresh',
                   onPressed: () {
-                    loadWeatherData();
+                    initPosition();
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text("Weather data have been refreshed.",
@@ -490,7 +515,7 @@ class _ForecastDisplayState extends State<ForecastDisplay> {
       "December"
     ];
     DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
-    return "${date.day}, ${months[date.month]}";
+    return "${date.day}, ${months[date.month - 1]}";
   }
 
   @override

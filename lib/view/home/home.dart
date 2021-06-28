@@ -8,6 +8,8 @@ import '../../Model/WeatherData.dart';
 import '../../Model/WeatherOneCallHourlyData.dart';
 import '../Widget/TextWidget.dart';
 import '../../responsive.dart';
+import '../../geolocation/UserLocation.dart';
+import 'package:location/location.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -18,22 +20,44 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late Future<WeatherData> futureWeatherData;
-  var weatherFetcher = WeatherFetcher(city: "Saint-Étienne-de-Montluc");
+
   late Future<WeatherOneCallHourlyData> futureWeatherOneCallData;
-  var weatherOneCallFetcher = WeatherOneCallFetcher(
-      latitude: "47.27", longitude: "-1.79", time: "hourly");
+  late Future<LocationData> futurePosition;
+  var position;
 
   @override
   void initState() {
     super.initState();
-    futureWeatherData = weatherFetcher.fetchData();
-    futureWeatherOneCallData = weatherOneCallFetcher.fetchHourlyData();
+    initPosition();
   }
 
-  void loadWeatherData() {
+  void initPosition() {
+    loadWeatherData();
+    var locationFetcher = UserLocation();
+    futurePosition = locationFetcher.determinePosition();
+    futurePosition
+        .then((positionData) => setState(() {
+              position = positionData;
+              loadWeatherData(
+                  latitude: positionData.latitude.toString(),
+                  longitude: positionData.longitude.toString());
+            }))
+        .catchError((error) => () {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text(error.message)));
+              loadWeatherData();
+            });
+  }
+
+  void loadWeatherData(
+      {String latitude = "47.27", String longitude = "-1.79"}) {
     setState(() {
-      futureWeatherData = weatherFetcher.fetchData();
+      var weatherFetcher =
+          WeatherFetcher(latitude: latitude, longitude: longitude);
+      var weatherOneCallFetcher = WeatherOneCallFetcher(
+          latitude: latitude, longitude: longitude, time: "hourly");
       futureWeatherOneCallData = weatherOneCallFetcher.fetchHourlyData();
+      futureWeatherData = weatherFetcher.fetchData();
     });
   }
 
@@ -51,8 +75,7 @@ class _HomePageState extends State<HomePage> {
                   icon: const Icon(Icons.refresh_outlined),
                   tooltip: 'Refresh',
                   onPressed: () {
-                    loadWeatherData();
-                    var test = context;
+                    initPosition();
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text("Weather data have been refreshed.",
