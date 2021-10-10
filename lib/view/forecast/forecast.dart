@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:weatherapp/Model/WeatherIcon/WeatherIcon.dart';
 import '../../config/color.dart';
@@ -53,7 +51,7 @@ class _ForecastPage extends State<ForecastPage> {
   }
 
   void loadWeatherData(
-      {String latitude = "47.27", String longitude = "-1.79"}) {
+      {String latitude = "48.85639", String longitude = "2.35204"}) {
     setState(() {
       var weatherForecastFetcher =
           WeatherOneCallFetcher(latitude: latitude, longitude: longitude);

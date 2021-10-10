@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void loadWeatherData(
-      {String latitude = "47.27", String longitude = "-1.79"}) {
+      {String latitude = "48.85639", String longitude = "2.35204"}) {
     setState(() {
       var weatherFetcher =
           WeatherFetcher(latitude: latitude, longitude: longitude);
