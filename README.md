@@ -5,3 +5,5 @@ This is my first Flutter project. I wanted to learn Flutter by doing, so i decid
 ## Design
 
 Inspiration : https://dribbble.com/shots/16987787-Weather-App (from Rasta Mokhtariy)
+
+![Illustration](illustration.png "Illustration")
